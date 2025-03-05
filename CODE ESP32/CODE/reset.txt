@@ -1,0 +1,41 @@
+$query1 = "INSERT INTO energy (resetenergy) VALUES ($resetenergy)";
+
+//CODE RESET KONFIGURASI WIFI MANAGER DAN ENERGY -----------------------------------------------------------------------------------------------------------------
+void checkButton(){
+  // check for button press
+  if ( digitalRead(WIFI_PIN) == LOW ) {
+    if( digitalRead(WIFI_PIN) == LOW ){
+      Serial.println("Button Pressed");
+      if( digitalRead(WIFI_PIN) == LOW ){
+        Serial.println("Button Held");
+        Serial.println("Erasing Config Wifi, restarting");
+        wm.resetSettings();
+        ESP.restart();
+      }
+      
+      // start portal w delay
+      Serial.println("Starting config portal");
+      wm.setConfigPortalTimeout(1200);
+      
+      if (!wm.startConfigPortal("Powermonitoring","PMDIGITAL")) {
+        Serial.println("failed to connect or hit timeout");
+        delay(3000);
+      } else {
+        Serial.println("connected");
+      }
+    }
+  }
+      if ( digitalRead(ENERGY_PIN) == LOW ) {
+    if( digitalRead(ENERGY_PIN) == LOW ){
+      Serial.println("Button Pressed");
+      if( digitalRead(ENERGY_PIN) == LOW ){
+        Serial.println("Button Held");
+        Serial.println("Erasing Energy");
+        pzem.resetEnergy(); 
+      }
+    }
+  }
+}
+
+void loop
+  checkButton();
