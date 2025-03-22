@@ -25,10 +25,14 @@ Target Bimbingan 3.2                           (SELESAI)
 2. PENYIMPANAN PADA DATABASE DAN PENAMPILAN PADA WEB
 3. UJI KECEPATAN PENGIRIMAN DATA
 
-Target Bimbingan 3.3                           (PROGRES)
+Target Bimbingan 3.3                           (SELESAI)
 
 1. LAPORAN TA BAB2 DASAR TEORI
 2. TABEL, TREND, LOGIN
 3. FITUR RESET ENERGY, RESET WIFI, PUTUS JARINGAN LISTRIK
 
+Target Bimbingan 4                           (PROGRes)
 
+1. UUBAH MENJADI LARAVEL
+2. COBA BEBAN RESISTIF SENSOR
+3. LAPORAN TA BAB 3// 3D PROGRES (Tambahan pak supri karakterisitk beban dan indentifikasi di tujuan, latar belakang tambahkan survei pa heri budi 19 rumah, FUZZY dijelaskan detail di bab 3 
