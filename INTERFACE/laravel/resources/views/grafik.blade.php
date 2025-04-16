@@ -13,7 +13,7 @@
 
 <div class="container">
     <div class="row">
-        <!-- Main Content -->
+        <!-- Main Content Grafik-->
         <main class="container col-md-12 ms-sm-auto col-lg-11 px-md-4 ">
             <div class="pt-3">
                 <h1 class="pb-2 border-bottom border-secondary">Trend Parameter Listrik</h1>
