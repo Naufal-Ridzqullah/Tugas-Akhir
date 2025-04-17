@@ -10,6 +10,8 @@ use App\Models\ResetWifi;
 use Illuminate\Http\Request;
 use App\Models\LuasBangunan;
 use App\Models\EnergiLog;
+use Illuminate\Support\Facades\Cache;
+
 
 class DataController extends Controller
 {
@@ -86,5 +88,39 @@ class DataController extends Controller
             ]
         ]);
     }
+
+    // Diakses oleh browser (AJAX) untuk ambil data terbaru
+    public function latestDataWeb()
+    {
+    $data = Cache::get('esp_latest_data');
+        if ($data) {
+            return response()->json($data);
+        } else {
+            return response()->json(['error' => 'Belum ada data dari ESP'], 404);
+        }
+    }
+
+    // Diakses oleh ESP (POST) untuk mengirim data
+    public function receiveData(Request $request)
+        {
+
+            // Mapping dari input field ke format standar sistem
+            $data = [
+                "Voltage" => $request->input('voltage'),
+                "Current" => $request->input('current'),
+                "Frequency" => $request->input('frequency'),
+                "Power" => $request->input('power'),
+                "Energy" => $request->input('energy'),
+                "PowerFactor" => $request->input('pf'),
+                "waktu" => now()->toDateTimeString(),
+            ];
+
+            // Simpan data di cache
+            Cache::put('esp_latest_data', $data, now()->addMinutes(10));
+
+            return response()->json(['status' => 'Data received']);
+        }
+
+
 }
 

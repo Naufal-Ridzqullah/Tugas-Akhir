@@ -13,6 +13,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [DataController::class, 'dashboard', 'energiLogs'])->name('dashboard');
     Route::get('/dashboard/data-realtime', [DataController::class, 'dataRealtime'])->name('dashboard.data-realtime');
+    Route::get('/dashboard/latest-data', [DataController::class, 'latestDataWeb'])->name('dashboard.latest-data');
     Route::post('/dashboard/relay/toggle', [PerintahController::class, 'toggle'])->name('dashboard.relay.toggle');
     Route::get('/dashboard/relay/status', [PerintahController::class, 'status'])->name('dashboard.relay.status');
     Route::get('/dashboard/resetenergi/statusenergi', [PerintahController::class, 'statusenergi'])->name('dashboard.energi.status');
@@ -21,6 +22,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/dashboard/resetwifi/togglewifi', [PerintahController::class, 'togglewifi'])->name('dashboard.wifi.toggle');
     Route::post('/dashboard/save-luas', [LuasBangunanController::class, 'saveLuas'])->name('dashboard.save-luas');
     Route::get('/dashboard/energi-log', [EnergiLogController::class, 'fuzzy'])->name('dashboard.energi-log');
+    Route::get('/get-fuzzy', [EnergiLogController::class, 'fuzzyJson'])->name('get.fuzzy');
+
     
     Route::get('/tabel', [DataController::class, 'tabel'])->name('tabel');
     Route::get('/grafik', [GrafikController::class, 'grafikMonitoring'])->name('grafik');

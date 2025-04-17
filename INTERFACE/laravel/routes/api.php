@@ -11,6 +11,7 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+Route::post('data/realtime', [DataController::class, 'receiveData']);
 Route::post('data/save', [DataController::class, 'store']);
 Route::post('fuzzy/save', [EnergiLogController::class, 'savefuzzy']);
 Route::get('relay/command', [PerintahController::class, 'status']);

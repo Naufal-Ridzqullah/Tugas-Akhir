@@ -235,150 +235,161 @@
 
     
     <script>
-        //CHART EFISIENSI
-        const labels = @json($labels);
-        const values = @json($values);
-        const fuzzies = @json($fuzzies);
+    // Inisialisasi Chart
+    const labels = @json($labels);
+    const values = @json($values);
+    const fuzzies = @json($fuzzies);
 
-        const ctx = document.getElementById('energiChart').getContext('2d');
-
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Konsumsi Energi (kWh)',
-                    data: values,
-                    fill: false,
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    backgroundColor: 'rgba(75, 192, 192, 1)',
-                    tension: 0.2,
-                    pointRadius: 6,
-                    pointHoverRadius: 8,
-                    pointBackgroundColor: fuzzies.map(fuzzy => {
+    const ctx = document.getElementById('energiChart').getContext('2d');
+    
+    // Inisialisasi Chart pertama kali
+    const energiChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Konsumsi Energi (kWh)',
+                data: values,
+                fill: false,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 1)',
+                tension: 0.2,
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                pointBackgroundColor: fuzzies.map(fuzzy => {
+                    if (fuzzy === 'Efisien') return 'green';
+                    if (fuzzy === 'Cukup Efisien') return 'orange';
+                    if (fuzzy === 'Tidak Efisien') return 'red';
+                    return 'gray';
+                }),
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const index = context.dataIndex;
+                            return `KWH: ${values[index]} (${fuzzies[index]})`;
+                        }
+                    }
+                },
+                datalabels: {
+                    align: 'left',
+                    anchor: 'center',
+                    font: {
+                        size: 10,
+                        weight: 'bold'
+                    },
+                    color: function(context) {
+                        const index = context.dataIndex;
+                        const fuzzy = fuzzies[index];
                         if (fuzzy === 'Efisien') return 'green';
                         if (fuzzy === 'Cukup Efisien') return 'orange';
                         if (fuzzy === 'Tidak Efisien') return 'red';
                         return 'gray';
-                    }),
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: true
                     },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const index = context.dataIndex;
-                                return `KWH: ${values[index]} (${fuzzies[index]})`;
-                            }
-                        }
-                    },
-                    datalabels: {
-                        align: 'left',  // posisi horizontal ke kanan
-                        anchor: 'center', // titik acuan di tengah
-                        font: {
-                            size: 10, // <-- Ukuran font label diperkecil
-                            weight: 'bold'
-                        },
-                        color: function(context) {
-                            const index = context.dataIndex;
-                            const fuzzy = fuzzies[index];
-                            if (fuzzy === 'Efisien') return 'green';
-                            if (fuzzy === 'Cukup Efisien') return 'orange';
-                            if (fuzzy === 'Tidak Efisien') return 'red';
-                            return 'gray';
-                        },
-                        formatter: function(value, context) {
-                            const index = context.dataIndex;
-                            return `${value} (${fuzzies[index]})`;
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'KWH'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Tanggal'
-                        }
+                    formatter: function(value, context) {
+                        const index = context.dataIndex;
+                        return `${value} (${fuzzies[index]})`;
                     }
                 }
             },
-            plugins: [ChartDataLabels]
-        });
-
-        //AJAX
-        let lastUpdate = "{{ $data->waktu ?? '' }}";
-
-        function loadRealtimeData() {
-            $.ajax({
-                url: "{{ route('dashboard.data-realtime') }}",
-                method: "GET",
-                success: function(res) {
-                    // Cek apakah ada update baru
-                    if (res.waktu !== lastUpdate) {
-                        lastUpdate = res.waktu;
-
-                        // Update waktu terakhir
-                        $('#waktu-update').text(lastUpdate);
-
-                        const iconMap = {
-                            'Tegangan (Volt)': 'nc-sound-wave',
-                            'Arus (Amper)': 'nc-sound-wave',
-                            'Frekuensi (Hz)': 'nc-sound-wave',
-                            'Daya (Watt)': 'nc-sun-fog-29',
-                            'Kwh Meter': 'nc-money-coins',
-                            'Power Factor': 'nc-tag-content',
-                        };
-
-                        const colorMap = ['danger', 'success', 'primary', 'info', 'warning', 'dark'];
-
-                        let html = '';
-                        res.cards.forEach((card, index) => {
-                            const icon = iconMap[card.title] || 'nc-settings';
-                            const color = colorMap[index % colorMap.length];
-
-                            html += `
-                                <div class="col-lg-4 col-md-6 col-sm-12">
-                                    <div class="card card-custom p-3 d-flex flex-row justify-content-between align-items-center">
-                                        <div>
-                                            <h6 class="text-muted mb-1">${card.title}</h6>
-                                            <h3 class="mb-0 fw-bold">${card.value} ${card.unit}</h3>
-                                        </div>
-                                        <div class="icon-container icon-${color}">
-                                            <i class="nc-icon ${icon}"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                        });
-
-                        // Update DOM untuk kartu data
-                        $('#data-cards').html(html);
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'KWH'
                     }
                 },
-                error: function(xhr) {
-                    console.error("Gagal memuat data realtime:", xhr.statusText);
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Tanggal'
+                    }
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+
+    // Fungsi untuk menarik data fuzzy
+    function ambilFuzzyLog() {
+        fetch("{{ route('get.fuzzy') }}")
+            .then(response => response.json())
+            .then(data => {
+                // Pastikan data yang diterima valid
+                if (data && data.labels && data.values && data.fuzzies) {
+                    // Update data chart tanpa merubah chart yang ada
+                    updateChartData(data.labels, data.values, data.fuzzies);
+                } else {
+                    console.error("Data tidak lengkap:", data);
+                }
+            })
+            .catch(err => console.error("Gagal ambil data fuzzy:", err));
+    }
+
+    // Fungsi untuk memperbarui data chart yang sudah ada
+    function updateChartData(labels, values, fuzzies) {
+        // Memastikan chart sudah ada
+        if (energiChart) {
+            // Memperbarui data chart (labels, values, dan pointBackgroundColor)
+            energiChart.data.labels = labels;
+            energiChart.data.datasets[0].data = values;
+            energiChart.data.datasets[0].pointBackgroundColor = fuzzies.map(fuzzy => {
+                if (fuzzy === 'Efisien') return 'green';
+                if (fuzzy === 'Cukup Efisien') return 'orange';
+                if (fuzzy === 'Tidak Efisien') return 'red';
+                return 'gray';
+            });
+
+            // Memperbarui chart setelah data diubah
+            energiChart.update();
+        }
+    }
+
+    // Fungsi untuk auto-load data fuzzy dan update chart setiap 10 detik
+    setInterval(ambilFuzzyLog, 10000);
+
+    // Menarik data pertama kali ketika halaman selesai dimuat
+    document.addEventListener("DOMContentLoaded", ambilFuzzyLog);
+
+        // ajax realtime data
+        function fetchLatestData() {
+            $.ajax({
+                url: "{{ route('dashboard.latest-data') }}",
+                method: "GET",
+                dataType: "json",
+                success: function(data) {
+                    $('#waktu-update').text(data.waktu ?? '—');
+
+                    const values = [
+                        { key: 'Voltage', unit: 'V' },
+                        { key: 'Current', unit: 'A' },
+                        { key: 'Frequency', unit: 'Hz' },
+                        { key: 'Power', unit: 'W' },
+                        { key: 'Energy', unit: 'kWh' },
+                        { key: 'PowerFactor', unit: '' },
+                    ];
+
+                    values.forEach((item, index) => {
+                        const val = data[item.key] ?? 'N/A';
+                        $('#data-cards .col-lg-4').eq(index).find('h3').html(`${val} ${item.unit}`);
+                    });
                 },
-                complete: function() {
-                    // Jadwalkan permintaan berikutnya setelah 5 detik
-                    setTimeout(loadRealtimeData, 5000);
+                error: function() {
+                    console.log("Belum ada data dari ESP.");
                 }
             });
         }
 
-        // Mulai polling pertama
-        loadRealtimeData();
+        fetchLatestData();
+        setInterval(fetchLatestData, 3000);
 
         // RELAY
         $(document).ready(function() {
